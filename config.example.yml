@@ -1,5 +1,12 @@
+provider: cloudflare
 auth:
-  token: CLOUDFLARE_TOKEN
+  cloudflare:
+    token: CLOUDFLARE_TOKEN
+    #
+    # Other arguments of cloudflare-python
+    # class constructor are supported, e.g auth using email:
+    #
+    # email: test@example.com
 
 replace:
   a:

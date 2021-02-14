@@ -1,13 +1,20 @@
 from . import log
-from .adapters import CloudFlareAdapter
+from .adapters import ADAPTERS, BaseAdapter
 from .config import config_schema
 
 
 class BulkUpdater(object):
     def __init__(self, config: object) -> None:
+        # validate config
         config_schema.validate(config)
         self.config = config
-        self.api = CloudFlareAdapter(config['auth'])
+        # initiate concrete api adapter (cloudflare)
+        provider_name = config['provider']
+        provider_adapter = ADAPTERS[provider_name]
+        provider_config = {}
+        if provider_name in config['auth']:
+            provider_config = config['auth'][provider_name]
+        self.api: BaseAdapter = provider_adapter(provider_config)
 
     def replace(self, dry: bool):
         matches = self._find_replace_matches()

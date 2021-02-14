@@ -9,16 +9,26 @@ Currently only Cloudflare DNS is supported, other providers might be added in th
 
 ## Install
 ```sh
-pip install -r requirements.txt
-bulkdns --help
+# install requirements (optional: run within virtualenv)
+$ pip install -r requirements.txt
+
+# copy example and make changes
+$ cp config.example.yml config.yml
+
+# run bulkdns
+$ bulkdns --help
 ```
 
 ## Development
 
 ```sh
-virtualenv venv
-. venv/bin/activate
-pip install --editable .
+# create & activate virtualenv (recommended)
+$ virtualenv venv
+$ . venv/bin/activate
 
-bulkdns --help
+# install dependencies
+$ pip install --editable .
+
+# run bulkdns
+$ bulkdns --help
 ```

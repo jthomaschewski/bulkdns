@@ -1,16 +1,15 @@
 
 import CloudFlare
 
+from .base_adapter import BaseAdapter
 
-class CloudFlareAdapter(object):
+
+class CloudFlareAdapter(BaseAdapter):
     """ All Cloudflare API/lib calls (Support other dns providers in the future?) """
 
     def __init__(self, auth) -> None:
-        self.cf = CloudFlare.CloudFlare(token=auth['token'])
-        self.cf_raw = CloudFlare.CloudFlare(
-            token=auth['token'],
-            raw=True
-        )
+        self.cf = CloudFlare.CloudFlare(**auth)
+        self.cf_raw = CloudFlare.CloudFlare(raw=True, **auth)
 
     def zones(self) -> dict:
         zones = []

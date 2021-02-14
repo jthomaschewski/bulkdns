@@ -1,1 +1,6 @@
-from .cloudflare import CloudFlareAdapter
+from .cloudflare_adapter import CloudFlareAdapter
+
+
+ADAPTERS = {
+    'cloudflare': CloudFlareAdapter,
+}
