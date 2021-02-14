@@ -62,8 +62,8 @@ class CloudFlareAdapter(BaseAdapter):
 
         return records
 
-    def update_record(self, zone_id: str, record_id: str, config):
-        data = {'content': config['to']}
-        if 'ttl' in config:
-            data['ttl'] = config['ttl']
+    def update_record(self, zone_id: str, record_id: str, match_config):
+        data = {'content': match_config['to']}
+        if 'ttl' in match_config:
+            data['ttl'] = match_config['ttl']
         self.cf.zones.dns_records.patch(zone_id, record_id, data=data)

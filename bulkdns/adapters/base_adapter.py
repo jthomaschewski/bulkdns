@@ -11,5 +11,5 @@ class BaseAdapter(ABC):
         pass
 
     @abstractmethod
-    def update_record(self, zone_id: str, record_id: str, config):
+    def update_record(self, zone_id: str, record_id: str, match_config):
         pass

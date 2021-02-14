@@ -21,27 +21,32 @@ class BulkUpdater(object):
 
         log.info('\n\nList of changes: ')
         for match in matches:
+            zone = match['zone']
             record = match['record']
             conf = match['config']
-            log.info('  %s - %s : from: %s to: %s ' %
-                     (record['name'], record['type'], conf['from'], conf['to']))
+            log.info(' (%s)  %s - %s : from: %s to: %s ' %
+                     (zone['name'], record['name'], record['type'], conf['from'], conf['to']))
 
         if not log.confirm('\n\nExecute changes?'):
             log.warn('Cancelled')
             return
 
         for match in matches:
+            record = match['zone']
             record = match['record']
             conf = match['config']
-            exec_info = '%s - %s : from: %s to: %s ' % (
-                record['name'], record['type'], conf['from'], conf['to'])
+            exec_info = '(%s) %s - %s : from: %s to: %s ' % (
+                zone['name'], record['name'], record['type'], conf['from'], conf['to'])
 
             if dry is True:
                 log.debug('...exec (dry): %s ' % exec_info)
             else:
                 log.debug('...exec (api): %s ' % exec_info)
-                self.api.update_record(match['record']['zone_id'],
-                                       match['record']['id'], match['config'])
+                self.api.update_record(
+                    zone_id=match['zone']['id'],
+                    record_id=match['record']['id'],
+                    match_config=match['config']
+                )
 
     def _find_replace_matches(self) -> list:
         zones = self.api.zones()
@@ -58,14 +63,17 @@ class BulkUpdater(object):
             records = self.api.records(zone['id'], record_types)
             for record in records:
                 match = self._find_record_match(
-                    record, replace_config[record['type']])
+                    zone,
+                    record,
+                    replace_config[record['type']],
+                )
                 if match != None:
                     matches.append(match)
 
         return matches
 
-    def _find_record_match(self, record, replace_configs):
+    def _find_record_match(self, zone, record, replace_configs):
         for replace_config in replace_configs:
             if replace_config['from'] == record['content']:
-                return {'config': replace_config, 'record': record}
+                return {'config': replace_config, 'record': record, 'zone': zone}
         return None
