@@ -28,7 +28,7 @@ class CloudFlareAdapter(BaseAdapter):
             for zone in zones_result:
                 zones.append({
                     'id': zone['id'],
-                    'name': zone['name']
+                    'name': zone['name'],
                 })
             total_pages = raw_results['result_info']['total_pages']
 
