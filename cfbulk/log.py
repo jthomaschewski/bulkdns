@@ -1,12 +1,21 @@
 import click
 
 
+def debug(message: str):
+    click.secho(message, fg='bright_black')
+
+
 def warn(message: str):
-    click.secho(message, nl=False, fg='yellow', bold=True)
+    click.secho(message, fg='yellow', bold=True)
 
 
 def error(message: str):
-    click.secho(message, nl=False, fg='red', bold=True)
+    click.secho(message, fg='red', bold=True)
+
+
+def errorexit(message: str):
+    error(message)
+    exit(-1)
 
 
 def info(message: str):

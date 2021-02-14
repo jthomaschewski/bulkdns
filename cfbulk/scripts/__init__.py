@@ -1,0 +1,1 @@
+from .cfbulk import cli

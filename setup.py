@@ -3,6 +3,9 @@ from setuptools import setup, find_packages
 setup(
     name='cfbulk',
     version='0.0.1',
+    author='Janek Thomaschewski',
+    author_email='janek@thomaschewski.dev',
+    description=('DNS bulk updater for Cloudflare DNS'),
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
@@ -13,6 +16,6 @@ setup(
     ],
     entry_points='''
       [console_scripts]
-      cfbulk=cfbulk.scripts.cfbulk:cli
+      cfbulk=cfbulk.scripts:cli
     '''
 )

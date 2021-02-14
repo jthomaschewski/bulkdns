@@ -1,0 +1,16 @@
+auth:
+  token: CLOUDFLARE_TOKEN
+
+replace:
+  a:
+    - from: 127.0.0.1
+      to: 127.0.0.2
+
+  aaaa:
+    - from: ::1
+      to: ::2
+      ttl: 120
+
+  cname:
+    - from: old.cname.example.com
+      to: new.cname.example.com

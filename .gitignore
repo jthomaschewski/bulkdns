@@ -1,4 +1,16 @@
+# Config
+config.yml
+
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+
+# Development/IDE
 .vscode
 venv
-__pycache__
-*.egg-info
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
