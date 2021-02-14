@@ -1,5 +1,7 @@
 
 import CloudFlare
+from bulkdns.errors import BulkDnsApiError
+from CloudFlare.exceptions import CloudFlareAPIError, CloudFlareError
 
 from .base_adapter import BaseAdapter
 
@@ -16,8 +18,11 @@ class CloudFlareAdapter(BaseAdapter):
         page_number = 0
         while True:
             page_number += 1
-            raw_results = self.cf_raw.zones.get(
-                params={'per_page': 50, 'page': page_number})
+            try:
+                raw_results = self.cf_raw.zones.get(
+                    params={'per_page': 50, 'page': page_number})
+            except CloudFlareError as err:
+                raise self._handle_cf_error(err)
 
             zones_result = raw_results['result']
             for zone in zones_result:
@@ -37,10 +42,13 @@ class CloudFlareAdapter(BaseAdapter):
         page_number = 0
         while True:
             page_number += 1
-            raw_results = self.cf_raw.zones.dns_records.get(
-                zone_id,
-                params={'per_page': 50, 'page': page_number}
-            )
+            try:
+                raw_results = self.cf_raw.zones.dns_records.get(
+                    zone_id,
+                    params={'per_page': 50, 'page': page_number}
+                )
+            except CloudFlareError as err:
+                raise self._handle_cf_error(err)
 
             record_result = raw_results['result']
             for record in record_result:
@@ -66,4 +74,13 @@ class CloudFlareAdapter(BaseAdapter):
         data = {'content': match_config['to']}
         if 'ttl' in match_config:
             data['ttl'] = match_config['ttl']
-        self.cf.zones.dns_records.patch(zone_id, record_id, data=data)
+
+        try:
+            self.cf.zones.dns_records.patch(zone_id, record_id, data=data)
+        except CloudFlareError as err:
+            raise self._handle_cf_error(err)
+
+    def _handle_cf_error(self, err: CloudFlareError):
+        if isinstance(err, CloudFlareAPIError):
+            raise BulkDnsApiError(str(err), int(err), err.error_chain)
+        raise err

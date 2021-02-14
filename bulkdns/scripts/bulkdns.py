@@ -1,9 +1,9 @@
 import click
 import yaml
-from CloudFlare import cloudflare
 from schema import SchemaError
 
 from bulkdns import BulkUpdater, log
+from bulkdns.errors import BulkDnsApiError
 
 
 @click.command()
@@ -29,5 +29,5 @@ def cli(dry: bool, config: str):
 
     try:
         bulk.replace(dry)
-    except cloudflare.CloudFlareAPIError as err:
+    except BulkDnsApiError as err:
         log.error('API error: %d %s' % (err, err))
