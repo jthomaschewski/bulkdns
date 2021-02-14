@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='cfbulk',
+    name='bulkdns',
     version='0.0.1',
     author='Janek Thomaschewski',
     author_email='janek@thomaschewski.dev',
@@ -16,6 +16,6 @@ setup(
     ],
     entry_points='''
       [console_scripts]
-      cfbulk=cfbulk.scripts:cli
+      bulkdns=bulkdns.scripts:cli
     '''
 )

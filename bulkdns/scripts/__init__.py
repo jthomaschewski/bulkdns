@@ -1,0 +1,1 @@
+from .bulkdns import cli

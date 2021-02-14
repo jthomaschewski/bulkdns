@@ -47,7 +47,7 @@ class BulkUpdater(object):
         matches = []
 
         for zone in zones:
-            log.debug('...fetching record of %s' % zone['name'])
+            log.debug('...fetching record %s' % zone['name'])
             records = self.api.records(zone['id'], record_types)
             for record in records:
                 match = self._find_record_match(

@@ -3,7 +3,7 @@ import yaml
 from CloudFlare import cloudflare
 from schema import SchemaError
 
-from cfbulk import BulkUpdater, log
+from bulkdns import BulkUpdater, log
 
 
 @click.command()

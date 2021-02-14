@@ -5,10 +5,12 @@ Simple search & replace of records across all zones.
 
 **Note: pre-alpha/dev, work in progress!**
 
+Currently only Cloudflare DNS is supported, other providers might be added in the future.
+
 ## Install
 ```sh
 pip install -r requirements.txt
-cfbulk --help
+bulkdns --help
 ```
 
 ## Development
@@ -18,5 +20,5 @@ virtualenv venv
 . venv/bin/activate
 pip install --editable .
 
-cfbulk --help
+bulkdns --help
 ```
