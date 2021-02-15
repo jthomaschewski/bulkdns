@@ -4,15 +4,19 @@ from bulkdns.errors import BulkDnsApiError
 from CloudFlare.exceptions import CloudFlareAPIError, CloudFlareError
 
 from .base_adapter import BaseAdapter
+from .ratelimit import Ratelimiter
 
 
 class CloudFlareAdapter(BaseAdapter):
     """ All Cloudflare API/lib calls (Support other dns providers in the future?) """
 
+    ratelimit = Ratelimiter(limit=1200, period=300)
+
     def __init__(self, auth) -> None:
         self.cf = CloudFlare.CloudFlare(**auth)
         self.cf_raw = CloudFlare.CloudFlare(raw=True, **auth)
 
+    @ratelimit
     def zones(self) -> dict:
         zones = []
         page_number = 0
@@ -37,6 +41,7 @@ class CloudFlareAdapter(BaseAdapter):
 
         return zones
 
+    @ratelimit
     def records(self, zone_id: str, record_types: list = ['a', 'aaaa', 'cname']) -> list:
         records = []
         page_number = 0
@@ -70,6 +75,7 @@ class CloudFlareAdapter(BaseAdapter):
 
         return records
 
+    @ratelimit
     def update_record(self, zone_id: str, record_id: str, match_config):
         data = {'content': match_config['to']}
         if 'ttl' in match_config:
