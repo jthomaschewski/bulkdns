@@ -9,6 +9,17 @@ from .ratelimit import Ratelimiter
 
 class CloudFlareAdapter(BaseAdapter):
     """ All Cloudflare API/lib calls (Support other dns providers in the future?) """
+    class _catch_cf_error(object):
+        def __init__(self, func) -> None:
+            self.func = func
+
+        def __call__(self, *args, **kwargs):
+            try:
+                return self.func(*args, **kwargs)
+            except CloudFlareError as err:
+                if isinstance(err, CloudFlareAPIError):
+                    raise BulkDnsApiError(str(err), int(err), err.error_chain)
+                raise
 
     ratelimit = Ratelimiter(limit=1200, period=300)
 
@@ -17,16 +28,14 @@ class CloudFlareAdapter(BaseAdapter):
         self.cf_raw = CloudFlare.CloudFlare(raw=True, **auth)
 
     @ratelimit
+    @_catch_cf_error
     def zones(self) -> dict:
         zones = []
         page_number = 0
         while True:
             page_number += 1
-            try:
-                raw_results = self.cf_raw.zones.get(
-                    params={'per_page': 50, 'page': page_number})
-            except CloudFlareError as err:
-                raise self._handle_cf_error(err)
+            raw_results = self.cf_raw.zones.get(
+                params={'per_page': 50, 'page': page_number})
 
             zones_result = raw_results['result']
             for zone in zones_result:
@@ -42,18 +51,16 @@ class CloudFlareAdapter(BaseAdapter):
         return zones
 
     @ratelimit
+    @_catch_cf_error
     def records(self, zone_id: str, record_types: list = ['a', 'aaaa', 'cname']) -> list:
         records = []
         page_number = 0
         while True:
             page_number += 1
-            try:
-                raw_results = self.cf_raw.zones.dns_records.get(
-                    zone_id,
-                    params={'per_page': 50, 'page': page_number}
-                )
-            except CloudFlareError as err:
-                raise self._handle_cf_error(err)
+            raw_results = self.cf_raw.zones.dns_records.get(
+                zone_id,
+                params={'per_page': 50, 'page': page_number}
+            )
 
             record_result = raw_results['result']
             for record in record_result:
@@ -76,17 +83,9 @@ class CloudFlareAdapter(BaseAdapter):
         return records
 
     @ratelimit
+    @_catch_cf_error
     def update_record(self, zone_id: str, record_id: str, match_config):
         data = {'content': match_config['to']}
         if 'ttl' in match_config:
             data['ttl'] = match_config['ttl']
-
-        try:
-            self.cf.zones.dns_records.patch(zone_id, record_id, data=data)
-        except CloudFlareError as err:
-            raise self._handle_cf_error(err)
-
-    def _handle_cf_error(self, err: CloudFlareError):
-        if isinstance(err, CloudFlareAPIError):
-            raise BulkDnsApiError(str(err), int(err), err.error_chain)
-        raise err
+        self.cf.zones.dns_records.patch(zone_id, record_id, data=data)
