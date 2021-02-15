@@ -21,32 +21,30 @@ class BulkUpdater(object):
 
         log.info('\n\nList of changes: ')
         for match in matches:
-            zone = match['zone']
-            record = match['record']
-            conf = match['config']
-            log.info(' (%s)  %s - %s : from: %s to: %s ' %
-                     (zone['name'], record['name'], record['type'], conf['from'], conf['to']))
+            log.info(self._format_match(match))
 
         if not log.confirm('\n\nExecute changes?'):
             log.warn('Cancelled')
             return
 
         for match in matches:
-            record = match['zone']
-            record = match['record']
-            conf = match['config']
-            exec_info = '(%s) %s - %s : from: %s to: %s ' % (
-                zone['name'], record['name'], record['type'], conf['from'], conf['to'])
-
             if dry is True:
-                log.debug('...exec (dry): %s ' % exec_info)
+                log.debug('...exec (dry): %s ' % self._format_match(match))
             else:
-                log.debug('...exec (api): %s ' % exec_info)
+                log.debug('...exec (api): %s ' % self._format_match(match))
                 self.api.update_record(
                     zone_id=match['zone']['id'],
                     record_id=match['record']['id'],
                     match_config=match['config']
                 )
+
+    def _format_match(self, match) -> str:
+        format = '%s %s %s from: %s to: %s'
+
+        zone = match['zone']
+        record = match['record']
+        conf = match['config']
+        return format % (zone['name'].ljust(35, ' '), record['name'].ljust(35, ' '), record['type'].ljust(10, ' '), conf['from'].ljust(30, ' '), conf['to'])
 
     def _find_replace_matches(self) -> list:
         log.debug('fetching zones...')
