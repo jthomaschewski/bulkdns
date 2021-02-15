@@ -1,5 +1,7 @@
 # Config
 config.yml
+config.*.yml
+!config.example.yml
 
 # Byte-compiled / optimized
 __pycache__/

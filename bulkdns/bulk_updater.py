@@ -49,9 +49,8 @@ class BulkUpdater(object):
                 )
 
     def _find_replace_matches(self) -> list:
+        log.debug('fetching zones...')
         zones = self.api.zones()
-        domains = list(map(lambda z: z['name'], zones))
-        log.debug('found zones: %s' % domains)
 
         # find records to patch
         replace_config = self.config['replace']
@@ -59,7 +58,7 @@ class BulkUpdater(object):
         matches = []
 
         for zone in zones:
-            log.debug('...fetching record %s' % zone['name'])
+            log.debug('fetching records of %s...' % zone['name'])
             records = self.api.records(zone['id'], record_types)
             for record in records:
                 match = self._find_record_match(
